@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:cinemaapp/config/router/app_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cinemaapp/config/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: '.env');
+  await dotenv.load(
+      fileName:
+          '.env'); // this load the keys required to initialize services, API's
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
-      title: 'Flutter Demo',
+      title: 'Cinema App',
       theme: AppTheme().getTheme(),
     );
   }
