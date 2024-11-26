@@ -40,7 +40,6 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -109,7 +108,7 @@ class _Slide extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: 5,
+          height: 1,
         ),
         SizedBox(
           width: 150,
@@ -151,7 +150,7 @@ class _Title extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleLarge;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Row(
         children: [
           if (title != null) Text(title!, style: titleStyle),

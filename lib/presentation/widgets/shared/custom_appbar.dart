@@ -11,7 +11,7 @@ class CustomAppBar extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
               Icon(Icons.movie_outlined, color: colors.primary),
