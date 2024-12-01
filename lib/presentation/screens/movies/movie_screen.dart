@@ -75,6 +75,12 @@ class _MovieDetails extends StatelessWidget {
                 child: Image.network(
                   movie.posterPath,
                   width: size.width * 0.3,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/images/poster-not-available.jpeg',
+                      width: size.width * 0.3,
+                    );
+                  },
                 ),
               ),
               const SizedBox(
@@ -211,6 +217,7 @@ class _CustomSliverAppBar extends StatelessWidget {
         ),
         background: Stack(children: [
           SizedBox.expand(
+            // ignore: unnecessary_null_comparison
             child: Image.network(
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress != null) {
@@ -221,6 +228,12 @@ class _CustomSliverAppBar extends StatelessWidget {
               },
               movie.posterPath,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/images/poster-not-available.jpeg',
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           const SizedBox.expand(

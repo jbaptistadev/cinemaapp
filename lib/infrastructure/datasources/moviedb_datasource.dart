@@ -13,6 +13,18 @@ class MovieDbDataSource extends MoviesDataSource {
         'api_key': Environment.theMovieDbKey,
         'language': 'es-MX'
       }));
+
+  List<Movie> _jsonToMovies(Map<String, dynamic> json) {
+    final movieDBResponse = MovieDbResponse.fromJson(json);
+
+    final List<Movie> movies = movieDBResponse.results
+        .where((moviedb) => moviedb.posterPath != 'no-poster')
+        .map((moviedb) => MovieMapper.movieDBtoEntity(moviedb))
+        .toList();
+
+    return movies;
+  }
+
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async {
     final response =
@@ -81,5 +93,13 @@ class MovieDbDataSource extends MoviesDataSource {
 
     final Movie movie = MovieMapper.movieDetailsToEntity(movieDb);
     return movie;
+  }
+
+  @override
+  Future<List<Movie>> searchMovie(String query) async {
+    final response =
+        await dio.get('/search/movie', queryParameters: {'query': query});
+
+    return _jsonToMovies(response.data);
   }
 }
