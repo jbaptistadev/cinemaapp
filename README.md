@@ -1,5 +1,3 @@
 # cinemaapp
 
-# DEV
-
-1. Copy .env.example to .env and replace with your own api keys
+A movie app using Flutter and Riverpod with domain driven architecture.
