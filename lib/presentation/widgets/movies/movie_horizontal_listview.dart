@@ -85,26 +85,29 @@ class _Slide extends StatelessWidget {
           width: 150,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.network(
-              movie.posterPath,
-              width: 150,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress != null) {
-                  return const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                }
+            child: (movie.posterPath == 'no-poster')
+                ? Image.asset('assets/images/poster-not-available.jpeg')
+                : Image.network(
+                    movie.posterPath,
+                    width: 150,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress != null) {
+                        return const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      }
 
-                return GestureDetector(
-                    onTap: () => context.push('/home/0/movie/${movie.id}'),
-                    child: FadeIn(child: child));
-              },
-            ),
+                      return GestureDetector(
+                          onTap: () =>
+                              context.push('/home/0/movie/${movie.id}'),
+                          child: FadeIn(child: child));
+                    },
+                  ),
           ),
         ),
         const SizedBox(

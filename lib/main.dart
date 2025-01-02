@@ -3,6 +3,7 @@ import 'package:cinemaapp/config/router/app_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cinemaapp/config/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   await dotenv.load(
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting();
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,

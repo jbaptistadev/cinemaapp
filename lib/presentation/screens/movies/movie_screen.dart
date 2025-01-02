@@ -1,10 +1,14 @@
 import 'package:cinemaapp/presentation/providers/storage/favorite_movies_provider.dart';
 import 'package:cinemaapp/presentation/providers/storage/local_storage_repository_provider.dart';
+import 'package:cinemaapp/presentation/widgets/movies/movie_rating.dart';
+import 'package:cinemaapp/presentation/widgets/movies/similar_movies.dart';
+import 'package:cinemaapp/presentation/widgets/video/video_from_movie.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cinemaapp/presentation/providers/providers.dart';
 import 'package:cinemaapp/domain/entities/movie.dart';
+import 'package:cinemaapp/config/helpers/human_format.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
   static const name = 'movie-screen';
@@ -67,65 +71,113 @@ class _MovieDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  movie.posterPath,
-                  width: size.width * 0.3,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      'assets/images/poster-not-available.jpeg',
-                      width: size.width * 0.3,
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              SizedBox(
-                width: (size.width - 40) * 0.7,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      movie.title,
-                      style: textStyles.titleLarge,
-                    ),
-                    Text(
-                      movie.overview,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Wrap(
-            children: [
-              ...movie.genreIds.map((gender) => Container(
-                    margin: const EdgeInsets.only(right: 10),
-                    child: Chip(
-                      label: Text(gender),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                  ))
-            ],
-          ),
-        ),
-        _ActorsByMovie(movieId: movie.id.toString()),
+        _TitleAndOverView(movie: movie, size: size, textStyles: textStyles),
+        _Genres(movie: movie),
+        // _ActorsByMovie(movieId: movie.id.toString()),
+        VideosFromMovie(movieId: movie.id),
         const SizedBox(
-          height: 100,
-        )
+          height: 40,
+        ),
+        SimilarMovies(movieId: movie.id),
       ],
+    );
+  }
+}
+
+class _Genres extends StatelessWidget {
+  const _Genres({
+    required this.movie,
+  });
+
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Wrap(
+        children: [
+          ...movie.genreIds.map((gender) => Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: Chip(
+                  label: Text(gender),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                ),
+              ))
+        ],
+      ),
+    );
+  }
+}
+
+class _TitleAndOverView extends StatelessWidget {
+  const _TitleAndOverView({
+    required this.movie,
+    required this.size,
+    required this.textStyles,
+  });
+
+  final Movie movie;
+  final Size size;
+  final TextTheme textStyles;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              movie.posterPath,
+              width: size.width * 0.3,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/images/poster-not-available.jpeg',
+                  width: size.width * 0.3,
+                );
+              },
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          SizedBox(
+            width: (size.width - 40) * 0.7,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  movie.title,
+                  style: textStyles.titleLarge,
+                ),
+                Text(
+                  movie.overview,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                MovieRating(voteAverage: movie.voteAverage),
+                Row(
+                  children: [
+                    const Text(
+                      'Premiere:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(HumanFormats.shortDate(movie.releaseDate))
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -211,8 +263,8 @@ class _CustomSliverAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
-
     final size = MediaQuery.of(context).size;
+    final scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
 
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -239,31 +291,33 @@ class _CustomSliverAppBar extends ConsumerWidget {
             ))
       ],
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        title: Text(
-          movie.title,
-          style: const TextStyle(fontSize: 20, color: Colors.white),
-          textAlign: TextAlign.start,
-        ),
+        titlePadding: const EdgeInsets.only(bottom: 0),
+        title: _CustomGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const [0.7, 1.0],
+            colors: [Colors.transparent, scaffoldBackgroundColor]),
         background: Stack(children: [
           SizedBox.expand(
-            child: Image.network(
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress != null) {
-                  return const SizedBox();
-                }
+            child: (movie.posterPath == 'no-poster')
+                ? Image.asset('assets/images/poster-not-available.jpeg')
+                : Image.network(
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress != null) {
+                        return const SizedBox();
+                      }
 
-                return FadeIn(child: child);
-              },
-              movie.posterPath,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  'assets/images/poster-not-available.jpeg',
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
+                      return FadeIn(child: child);
+                    },
+                    movie.posterPath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/poster-not-available.jpeg',
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
           ),
           const _CustomGradient(
             begin: Alignment.topRight,
