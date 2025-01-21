@@ -8,6 +8,7 @@ Tuve la oportunidad de desarrollar CinemaApp como proyecto personal, con el obje
  4. GoRouter
  5. Animations
  6. Isar DB
+ 7. Domain Driven Design
      
 
 ![cinema-project-min](https://github.com/user-attachments/assets/e2e94add-5506-44fe-bf8b-0c07578cb98e)
